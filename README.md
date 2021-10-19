@@ -15,13 +15,13 @@
 
 ## Overview
 
-This project is intended to turn a (WARC file)[https://en.wikipedia.org/wiki/Web_ARChive] into a sitemap or into something (a graph description)
-one could build a sitemap from. The first release only offers to create a (Graphviz)[https://graphviz.org/] file that can 
-then be rendered - for example into (SVG)[https://en.wikipedia.org/wiki/Scalable_Vector_Graphics].
+This project is intended to turn a [WARC file](https://en.wikipedia.org/wiki/Web_ARChive) into a sitemap or into something (a graph description)
+one could build a sitemap from. The first release only offers to create a [Graphviz](https://graphviz.org/) file that can 
+then be rendered - for example into [SVG](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics).
 
 ## Inner workings
 
-WARC files can be created for example by using (wget)[https://wiki.archiveteam.org/index.php/Wget_with_WARC_output]. The application 
+WARC files can be created for example by using [wget](https://wiki.archiveteam.org/index.php/Wget_with_WARC_output). The application 
 currently only supports uncompressed WARC files.
 
 * The WARC file is scanned for *response* objects
@@ -54,5 +54,8 @@ After rendering it using for example
 dot -Tsvg /tmp/output.gv >/tmp/sitemap.svg
 ```
 
-the resulting output looks like this (cutout from a much larger sitemap of (elbosso.github.io)[https://elbosso.github.io])
-![][examples/output.png]
+the resulting output looks like this (cutout from a much larger sitemap of [elbosso.github.io](https://elbosso.github.io))
+
+![Example rendering](examples/output.png)
+
+As should be obvious: the line thickness of the bubble, the fontsize of the label inside the bubble and the margin around the label inside the bubble grow with the numbers of connections for each bubble.
