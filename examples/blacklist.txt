@@ -4,3 +4,5 @@
 /images/.*
 /month.*
 /week.*
+/wp-json.*
+/wp-content.*
