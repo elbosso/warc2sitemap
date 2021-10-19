@@ -1,0 +1,10 @@
+/.idea/
+/target/
+*.iml
+/.settings/
+/.classpath
+/.project
+/.okhttpcache/
+/release.properties
+*~
+DEADJOE
