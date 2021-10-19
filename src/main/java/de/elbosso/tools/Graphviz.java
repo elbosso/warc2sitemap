@@ -53,31 +53,64 @@ WENN SIE AUF DIE MOEGLICHKEIT EINES SOLCHEN SCHADENS HINGEWIESEN WORDEN SIND.
  */
 public class Graphviz extends java.lang.Object
 {
-	private static java.util.List<java.util.regex.Pattern> pathBlacklist= Arrays.asList(new java.util.regex.Pattern[]
-			{
-					java.util.regex.Pattern.compile("/tag_.*")
-					,java.util.regex.Pattern.compile("/index.*")
-					,java.util.regex.Pattern.compile("/resources/.*")
-					,java.util.regex.Pattern.compile("/images/.*")
-					,java.util.regex.Pattern.compile("/month.*")
-					,java.util.regex.Pattern.compile("/week.*")
-			});
-	private static java.util.List<java.util.regex.Pattern> pathWhitelist= Arrays.asList(new java.util.regex.Pattern[]
-			{
-					java.util.regex.Pattern.compile(".*\\.html")
-			});
-	private static java.util.List<java.lang.String> xpathsToSearch= Arrays.asList(new java.lang.String[]
-			{
-					"//div[@id='abstract']"
-					,"//div[@id='contentdiv']"
-			});
-
 	public static void main(java.lang.String [] args) throws IOException
 	{
-		java.io.PrintWriter pw=new java.io.PrintWriter("/tmp/map.gv");
+		java.lang.String pathWhitelistname=null;//"examples/whitelist.txt";
+		java.lang.String pathBlacklistname=null;//"examples/blacklist.txt";
+		java.lang.String xpathsToSearchname=null;//"examples/xpathsToSearch.txt";
+		java.lang.String inputFileName=null;
+		java.lang.String outputFileName=null;
+		int i=0;
+		while(i<args.length)
+		{
+			if(args[i].equals("-w"))
+			{
+				pathWhitelistname=args[i+1];
+				++i;
+			}
+			else if(args[i].equals("-b"))
+			{
+				pathBlacklistname=args[i+1];
+				++i;
+			}
+			else if(args[i].equals("-x"))
+			{
+				xpathsToSearchname=args[i+1];
+				++i;
+			}
+			else if(args[i].equals("-i"))
+			{
+				inputFileName=args[i+1];
+				++i;
+			}
+			else if(args[i].equals("-o"))
+			{
+				outputFileName=args[i+1];
+				++i;
+			}
+			else
+				++i;
+		}
+
+
+		java.io.FileInputStream fis=new java.io.FileInputStream(pathWhitelistname);
+		java.lang.String[] pathWhitelistPatterns=de.elbosso.util.Utilities.readIntoStringArray(fis);
+		fis.close();
+		java.util.List<java.util.regex.Pattern> pathWhitelist=new java.util.LinkedList();
+		for(java.lang.String p:pathWhitelistPatterns)
+			pathWhitelist.add(java.util.regex.Pattern.compile(p));
+		fis=new java.io.FileInputStream(pathBlacklistname);
+		java.lang.String[] pathBlacklistPatterns=de.elbosso.util.Utilities.readIntoStringArray(fis);
+		fis.close();
+		java.util.List<java.util.regex.Pattern> pathBlacklist=new java.util.LinkedList();
+		for(java.lang.String p:pathBlacklistPatterns)
+			pathBlacklist.add(java.util.regex.Pattern.compile(p));
+		fis=new java.io.FileInputStream(xpathsToSearchname);
+		java.util.List<java.lang.String> xpathsToSearch=Arrays.asList(de.elbosso.util.Utilities.readIntoStringArray(fis));
+		fis.close();
 		java.util.Map<String, Vertex<String,Object>> nodes=new java.util.HashMap();
 		java.util.Map<String,java.util.List<Vertex<String,Object>>> connections=new java.util.HashMap();
-		try (WarcReader reader = new WarcReader(FileChannel.open(Paths.get("/home/elbosso/elbosso.warc")))) {
+		try (WarcReader reader = new WarcReader(FileChannel.open(Paths.get(inputFileName)))) {
 			for (WarcRecord record : reader) {
 				if (record instanceof WarcResponse && record.contentType().base().equals(MediaType.HTTP)) {
 					WarcResponse response = (WarcResponse) record;
@@ -190,6 +223,7 @@ public class Graphviz extends java.lang.Object
 		{
 			vertex.getAttributes().put(Graph.DOT_STYLE,"margin="+(0.01*vertex.getConnections().size())+",fontsize=\""+(14+(int)(2*vertex.getConnections().size()))+"pt\",penwidth="+(1.0+0.1*vertex.getConnections().size()));
 		}
+		java.io.PrintWriter pw=new java.io.PrintWriter(outputFileName);
 		pw.println(graph.toDotString(new Stringifier<Vertex<String, Object>>()
 		{
 			@Override

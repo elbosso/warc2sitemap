@@ -169,10 +169,18 @@ Changelog of this project.
               </executions>
               <configuration>
                   <mainClass>${project.main.class}</mainClass>
-                  <!--arguments>
-                      <argument>foo</argument>
-                      <argument>bar</argument>
-                  </arguments-->
+                  <arguments>
+                      <argument>-w</argument>
+                      <argument>examples/whitelist.txt</argument>
+                      <argument>-b</argument>
+                      <argument>examples/blacklist.txt</argument>
+                      <argument>-x</argument>
+                      <argument>examples/xpathsToSearch.txt</argument>
+                      <argument>-i</argument>
+                      <argument>/home/elbosso/elbosso.warc</argument>
+                      <argument>-o</argument>
+                      <argument>/tmp/sitemap.gv</argument>
+                  </arguments>
               </configuration>
           </plugin>
       </plugins>
