@@ -1,8 +1,0 @@
-/tag_.*
-/index.*
-/resources/.*
-/images/.*
-/month.*
-/week.*
-/wp-json.*
-/wp-content.*

@@ -171,13 +171,15 @@ Changelog of this project.
                   <mainClass>${project.main.class}</mainClass>
                   <arguments>
                       <argument>-w</argument>
-                      <argument>examples/whitelist.txt</argument>
+                      <argument>examples/hm-ag.de/whitelist.txt</argument>
                       <argument>-b</argument>
-                      <argument>examples/blacklist.txt</argument>
+                      <argument>examples/hm-ag.de/blacklist.txt</argument>
+                      <argument>-e</argument>
+                      <argument>examples/hm-ag.de/emphasize.txt</argument>
                       <argument>-x</argument>
-                      <argument>examples/xpathsToSearch.txt</argument>
+                      <argument>examples/hm-ag.de/xpathsToSearch.txt</argument>
                       <argument>-i</argument>
-                      <argument>/home/elbosso/elbosso.warc</argument>
+                      <argument>hm.warc</argument>
                       <argument>-o</argument>
                       <argument>/tmp/sitemap.gv</argument>
                   </arguments>

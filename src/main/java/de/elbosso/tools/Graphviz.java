@@ -1,8 +1,10 @@
 package de.elbosso.tools;
 
+import de.elbosso.algorithms.graph.Edge;
 import de.elbosso.algorithms.graph.Graph;
 import de.elbosso.algorithms.graph.Vertex;
 import de.elbosso.util.Stringifier;
+import de.elbosso.util.generator.generalpurpose.RandomColor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.netpreserve.jwarc.MediaType;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 
 /*
 Copyright (c) 2012-2020.
@@ -53,10 +56,15 @@ WENN SIE AUF DIE MOEGLICHKEIT EINES SOLCHEN SCHADENS HINGEWIESEN WORDEN SIND.
  */
 public class Graphviz extends java.lang.Object
 {
+	private static java.util.List<java.util.regex.Pattern> pathBlacklist;
+	private static java.util.List<java.util.regex.Pattern> pathWhitelist;
+	private static java.util.List<java.util.regex.Pattern> pathEmphasizelist;
+
 	public static void main(java.lang.String [] args) throws IOException
 	{
 		java.lang.String pathWhitelistname=null;//"examples/whitelist.txt";
 		java.lang.String pathBlacklistname=null;//"examples/blacklist.txt";
+		java.lang.String pathEmphasizelistname=null;//"examples/blacklist.txt";
 		java.lang.String xpathsToSearchname=null;//"examples/xpathsToSearch.txt";
 		java.lang.String inputFileName=null;
 		java.lang.String outputFileName=null;
@@ -71,6 +79,11 @@ public class Graphviz extends java.lang.Object
 			else if(args[i].equals("-b"))
 			{
 				pathBlacklistname=args[i+1];
+				++i;
+			}
+			else if(args[i].equals("-e"))
+			{
+				pathEmphasizelistname=args[i+1];
 				++i;
 			}
 			else if(args[i].equals("-x"))
@@ -93,21 +106,40 @@ public class Graphviz extends java.lang.Object
 		}
 
 
-		java.io.FileInputStream fis=new java.io.FileInputStream(pathWhitelistname);
-		java.lang.String[] pathWhitelistPatterns=de.elbosso.util.Utilities.readIntoStringArray(fis);
-		fis.close();
-		java.util.List<java.util.regex.Pattern> pathWhitelist=new java.util.LinkedList();
-		for(java.lang.String p:pathWhitelistPatterns)
-			pathWhitelist.add(java.util.regex.Pattern.compile(p));
-		fis=new java.io.FileInputStream(pathBlacklistname);
-		java.lang.String[] pathBlacklistPatterns=de.elbosso.util.Utilities.readIntoStringArray(fis);
-		fis.close();
-		java.util.List<java.util.regex.Pattern> pathBlacklist=new java.util.LinkedList();
-		for(java.lang.String p:pathBlacklistPatterns)
-			pathBlacklist.add(java.util.regex.Pattern.compile(p));
-		fis=new java.io.FileInputStream(xpathsToSearchname);
-		java.util.List<java.lang.String> xpathsToSearch=Arrays.asList(de.elbosso.util.Utilities.readIntoStringArray(fis));
-		fis.close();
+		pathWhitelist=new java.util.LinkedList();
+		if(pathWhitelistname!=null)
+		{
+			java.io.FileInputStream fis = new java.io.FileInputStream(pathWhitelistname);
+			java.lang.String[] pathWhitelistPatterns = de.elbosso.util.Utilities.readIntoStringArray(fis);
+			fis.close();
+			for (java.lang.String p : pathWhitelistPatterns)
+				pathWhitelist.add(java.util.regex.Pattern.compile(p));
+		}
+		pathBlacklist=new java.util.LinkedList();
+		if(pathBlacklistname!=null)
+		{
+			java.io.FileInputStream fis = new java.io.FileInputStream(pathBlacklistname);
+			java.lang.String[] pathBlacklistPatterns = de.elbosso.util.Utilities.readIntoStringArray(fis);
+			fis.close();
+			for (java.lang.String p : pathBlacklistPatterns)
+				pathBlacklist.add(java.util.regex.Pattern.compile(p));
+		}
+		pathEmphasizelist = new java.util.LinkedList();
+		if(pathEmphasizelistname!=null)
+		{
+			java.io.FileInputStream fis = new java.io.FileInputStream(pathEmphasizelistname);
+			java.lang.String[] pathEmphasizelistPatterns = de.elbosso.util.Utilities.readIntoStringArray(fis);
+			fis.close();
+			for (java.lang.String p : pathEmphasizelistPatterns)
+				pathEmphasizelist.add(java.util.regex.Pattern.compile(p));
+		}
+		java.util.List<java.lang.String> xpathsToSearch= Collections.emptyList();
+		if(xpathsToSearchname!=null)
+		{
+			java.io.FileInputStream fis = new java.io.FileInputStream(xpathsToSearchname);
+			xpathsToSearch = Arrays.asList(de.elbosso.util.Utilities.readIntoStringArray(fis));
+			fis.close();
+		}
 		java.util.Map<String, Vertex<String,Object>> nodes=new java.util.HashMap();
 		java.util.Map<String,java.util.List<Vertex<String,Object>>> connections=new java.util.HashMap();
 		try (WarcReader reader = new WarcReader(FileChannel.open(Paths.get(inputFileName)))) {
@@ -116,91 +148,77 @@ public class Graphviz extends java.lang.Object
 					WarcResponse response = (WarcResponse) record;
 					if(response.http().contentType().base().equals(MediaType.HTML))
 					{
-						boolean include=pathWhitelist.isEmpty();
-						if(include==false)
+						java.net.URL url=new java.net.URL(response.target());
+//						if(url.getPath().trim().equalsIgnoreCase("/"))
 						{
-							for (java.util.regex.Pattern pattern : pathWhitelist)
-							{
-								if (pattern.matcher(new java.net.URL(response.target()).getPath()).matches())
+								if (includePath(url.getPath().substring(1)))
 								{
-									include = true;
-									break;
-								}
-							}
-						}
-						if(include==true)
-						{
-							boolean exclude = false;
-							for (java.util.regex.Pattern pattern : pathBlacklist)
-							{
-								if (pattern.matcher(new java.net.URL(response.target()).getPath()).matches())
-								{
-									exclude = true;
-									break;
-								}
-							}
-							if (exclude == false)
-							{
-								java.net.URL url=new java.net.URL(response.target());
-								if(url.getPath().startsWith("/$")==false)
-								{
-									System.out.println(response.http().status() + " " +
-											response.target() + " " +
-											response.http().contentType() + " " +
-											response.http().contentType().base() + " " +
-											MediaType.HTTP
-											+ " " + url.getPath()
-									);
+										System.out.println(response.http().status() + " " +
+												response.target() + " " +
+												response.http().contentType() + " " +
+												response.http().contentType().base() + " " +
+												MediaType.HTTP
+												+ " " + url.getPath()
+										);
 /*									pw.print(massage(url.getPath().substring(1)));
 									pw.print(" [label=\"");
 									pw.print(url.getPath().substring(1));
 									pw.println("\"]");
 */
-									if(nodes.containsKey(url.getPath().substring(1))==false)
-									{
-										Vertex<java.lang.String, Object> node = new Vertex(url.getPath().substring(1));
-										nodes.put(node.getUserData(),node);
-									}
-									Document document = Jsoup.parse(response.body().stream(), null, url.getProtocol() + "://" + url.getHost() + ":" + url.getPort());
-
-									java.util.Set<String> elements = new java.util.HashSet();
-									for (java.lang.String xpathToSearch : xpathsToSearch)
-									{
-										elements.addAll(new java.util.HashSet(Xsoup.compile(xpathToSearch + "//a/@href").evaluate(document).list()));
-									}
-									java.util.List<Vertex<String,Object>> localConnections=null;
-									for (java.lang.String element : elements)
-									{
-										if (element.trim().length() > 0)
+										if (nodes.containsKey(url.getPath().substring(1)) == false)
 										{
-											if ((element.toUpperCase().startsWith("HTTP://") == false) &&
-													(element.toUpperCase().startsWith("HTTPS://") == false) &&
-													(element.toUpperCase().startsWith("$") == false)
-											)
+											Vertex<java.lang.String, Object> node = new Vertex(url.getPath().substring(1));
+											nodes.put(node.getUserData(), node);
+										}
+										Document document = Jsoup.parse(response.body().stream(), null, url.getProtocol() + "://" + url.getHost() + ":" + url.getPort());
+
+										java.util.Set<String> elements = new java.util.HashSet();
+										for (java.lang.String xpathToSearch : xpathsToSearch)
+										{
+											elements.addAll(new java.util.HashSet(Xsoup.compile(xpathToSearch + "//a/@href").evaluate(document).list()));
+										}
+										java.util.List<Vertex<String, Object>> localConnections = null;
+										for (java.lang.String element : elements)
+										{
+											if (element.trim().length() > 0)
 											{
-												System.out.println(element);
-/*												pw.print(massage(url.getPath().substring(1)));
-												pw.print(" -> ");
-												pw.println(massage(element));
-*/	 	 										if(nodes.containsKey(element)==false)
-											{
-												Vertex<java.lang.String, Object> node = new Vertex(element);
-												nodes.put(node.getUserData(),node);
-											}
-												if(localConnections==null)
+												if ((element.startsWith(url.getProtocol() + "://" + url.getHost()))||((element.toUpperCase().startsWith("HTTP://") == false) &&
+														(element.toUpperCase().startsWith("HTTPS://") == false) &&
+														(element.toUpperCase().startsWith("$") == false))
+												)
 												{
-													if(connections.containsKey(url.getPath().substring(1))==false)
+													java.lang.String prefix=url.getProtocol() + "://" + url.getHost()+":"+url.getPort()+"/";
+													if(element.startsWith(prefix))
+														element=element.substring(prefix.length());
+													prefix=url.getProtocol() + "://" + url.getHost()+"/";
+													if(element.startsWith(prefix))
+														element=element.substring(prefix.length());
+													if(includePath(element))
 													{
-														connections.put(url.getPath().substring(1),new java.util.LinkedList());
+														//													System.out.println(element);
+	/*												pw.print(massage(url.getPath().substring(1)));
+													pw.print(" -> ");
+													pw.println(massage(element));
+	*/
+														if (nodes.containsKey(element) == false)
+														{
+															Vertex<java.lang.String, Object> node = new Vertex(element);
+															nodes.put(node.getUserData(), node);
+														}
+														if (localConnections == null)
+														{
+															if (connections.containsKey(url.getPath().substring(1)) == false)
+															{
+																connections.put(url.getPath().substring(1), new java.util.LinkedList());
+															}
+															localConnections = connections.get(url.getPath().substring(1));
+														}
+														localConnections.add(nodes.get(element));
 													}
-													localConnections=connections.get(url.getPath().substring(1));
 												}
-												localConnections.add(nodes.get(element));
 											}
 										}
-									}
 								}
-							}
 						}
 					}
 				}
@@ -219,9 +237,29 @@ public class Graphviz extends java.lang.Object
 				}
 			}
 		}
+		java.util.Map<java.util.regex.Pattern,java.awt.Color> colors=new java.util.HashMap();
+		RandomColor randomColor=new RandomColor(System.currentTimeMillis());
 		for(Vertex<String, Object> vertex:graph)
 		{
-			vertex.getAttributes().put(Graph.DOT_STYLE,"margin="+(0.01*vertex.getConnections().size())+",fontsize=\""+(14+(int)(2*vertex.getConnections().size()))+"pt\",penwidth="+(1.0+0.1*vertex.getConnections().size()));
+			java.awt.Color color=null;
+			for(java.util.regex.Pattern pattern:pathEmphasizelist)
+			{
+				if (pattern.matcher(vertex.getUserData()).matches())
+				{
+					if(colors.containsKey(pattern)==false)
+						colors.put(pattern,randomColor.next());
+					color=colors.get(pattern);
+					break;
+				}
+			}
+			vertex.getAttributes().put(Graph.DOT_STYLE,"margin="+(0.01*vertex.getConnections().size())+",fontsize=\""+(14+(int)(2*vertex.getConnections().size()))+"pt\",penwidth="+(1.0+0.1*vertex.getConnections().size())+(color!=null?",style=filled,color=\"#"+String.format("%06X",color.getRGB()&0x00FFFFFF)+"\"":""));
+			if(color!=null)
+			{
+				for(Edge<String, Object> edge:vertex.getConnections())
+				{
+					edge.getAttributes().put(Graph.DOT_STYLE,"style=dotted,penwidth=10,color=\"#"+String.format("%06X",color.getRGB()&0x00FFFFFF)+"\"");
+				}
+			}
 		}
 		java.io.PrintWriter pw=new java.io.PrintWriter(outputFileName);
 		pw.println(graph.toDotString(new Stringifier<Vertex<String, Object>>()
@@ -233,5 +271,38 @@ public class Graphviz extends java.lang.Object
 			}
 		}));
 		pw.close();
+	}
+	private static boolean includePath(java.lang.String path)
+	{
+		boolean rv = false;
+		boolean include = pathWhitelist.isEmpty();
+		if (include == false)
+		{
+			for (java.util.regex.Pattern pattern : pathWhitelist)
+			{
+				if (pattern.matcher(path).matches())
+				{
+					include = true;
+					break;
+				}
+			}
+		}
+		if (include == true)
+		{
+			boolean exclude = false;
+			for (java.util.regex.Pattern pattern : pathBlacklist)
+			{
+				if (pattern.matcher(path).matches())
+				{
+					exclude = true;
+					break;
+				}
+			}
+			if (exclude == false)
+			{
+				rv = true;
+			}
+		}
+		return rv;
 	}
 }
