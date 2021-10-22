@@ -30,10 +30,16 @@ currently only supports uncompressed WARC files.
 * If the path matches at least one of the expressions or none are given, it is matched against the egular expressions on the blacklist (if such are given)
 * If the path matches none of those expressions - ore none are given, the body of the response is then loaded and filtered:
 * For each xpath from the list of xpaths to search, the xpath is expanded by _//a/@href_ and then applied to the body (if no xpaths are given, only _//a/@href_ is applied)
-* From the Result of the combined xpath queries, doubles are removed and after that, the remaining results are the pages, the currently analyzed one is connected to
+* From the result of the combined xpath queries, doubles are removed
+* The remaining paths are subjected to the blacklist/whitelist regime mentioned above and the ones not matching any whitelist entry or matching any blacklist entry are pruned
+* Then what is left is the collection of pages the currently analyzed one is connected to
 
 The whitelist, blacklist and list of xpaths to search can be configured by writing textfiles where each line contains exactly one item. Examples
 for that can be found inside directory _examples_.
+
+It is possible to give one more configuration file - a list of patterns to highlight. Every node matching a pattern in this file gets a random
+color assigned - the node itself gets this color as background and every edge terminating at this node is drawn dashed instead of solid using
+this color (and a thicker pen stroke).
 
 ## Build
 ```shell
@@ -59,3 +65,7 @@ the resulting output looks like this (cutout from a much larger sitemap of [elbo
 ![Example rendering](examples/output.png)
 
 As should be obvious: the line thickness of the bubble, the fontsize of the label inside the bubble and the margin around the label inside the bubble grow with the numbers of connections for each bubble.
+
+Here is another example, highlighting two nodes and their connections:
+
+![Example rendering](examples/output_emph.png)
