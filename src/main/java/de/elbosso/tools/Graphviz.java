@@ -269,8 +269,9 @@ public class Graphviz extends java.lang.Object
 			@Override
 			public String toString(Vertex<String, Object> client)
 			{
-				java.lang.String l=transform(client.getUserData().replace("&","%26"),0.1,"<br/>");
-				return l.length()>0?("<"+l+">"):"\"\"";
+				//java.lang.String l=transform(client.getUserData().replace("&","%26"),0.1,"<br/>");
+				java.lang.String l=transform(client.getUserData().replace("&","%26"),0.1,"\\n");
+				return l.length()>0?("\""+l+"\""):"\"\"";
 			}
 		}));
 		pw.close();
@@ -281,7 +282,7 @@ public class Graphviz extends java.lang.Object
 		double dy=java.lang.Math.max(1.0,java.lang.Math.sqrt(c/r));
 		double dx=r*dy;
 		int y=(int)dy;
-		System.out.println(s+" "+c+" "+dx+" "+dy);
+		//System.out.println(s+" "+c+" "+dx+" "+dy);
 		java.util.regex.Pattern pattern=java.util.regex.Pattern.compile("([\\./_ ])");
 		java.util.regex.Matcher matcher = pattern.matcher(s);
 		int fromIndex=0;
