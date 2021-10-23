@@ -270,51 +270,11 @@ public class Graphviz extends java.lang.Object
 			public String toString(Vertex<String, Object> client)
 			{
 				//java.lang.String l=transform(client.getUserData().replace("&","%26"),0.1,"<br/>");
-				java.lang.String l=transform(client.getUserData().replace("&","%26"),0.1,"\\n");
+				java.lang.String l=de.elbosso.util.Utilities.insertLinebreaksForCompactness(client.getUserData().replace("&","%26"),0.1,"\\n");
 				return l.length()>0?("\""+l+"\""):"\"\"";
 			}
 		}));
 		pw.close();
-	}
-	public static java.lang.String transform(java.lang.String s,double r,java.lang.String lineBreak)
-	{
-		double c=s.length();
-		double dy=java.lang.Math.max(1.0,java.lang.Math.sqrt(c/r));
-		double dx=r*dy;
-		int y=(int)dy;
-		//System.out.println(s+" "+c+" "+dx+" "+dy);
-		java.util.regex.Pattern pattern=java.util.regex.Pattern.compile("([\\./_ ])");
-		java.util.regex.Matcher matcher = pattern.matcher(s);
-		int fromIndex=0;
-		java.lang.StringBuffer result=new java.lang.StringBuffer();
-		java.lang.StringBuffer lineBuf=new java.lang.StringBuffer();
-		while ( matcher.find(fromIndex)) {
-			java.lang.String partToAdd=s.substring(fromIndex,matcher.start())+matcher.group(1);
-			if((lineBuf.length()<1)||(lineBuf.length()+partToAdd.length()<y))
-				lineBuf.append(partToAdd);
-			else if(y-lineBuf.length()>(lineBuf.length()+partToAdd.length())-y)
-				lineBuf.append(partToAdd);
-			else
-			{
-				result.append(lineBuf.toString());
-				result.append(lineBreak);
-				lineBuf=new java.lang.StringBuffer(partToAdd);
-			}
-			fromIndex=matcher.end();
-		}
-		java.lang.String partToAdd=s.substring(fromIndex);
-		if((lineBuf.length()<1)||(lineBuf.length()+partToAdd.length()<y))
-		{
-			lineBuf.append(partToAdd);
-			result.append(lineBuf.toString());
-		}
-		else
-		{
-			result.append(lineBuf.toString());
-			result.append(lineBreak);
-			result.append(partToAdd);
-		}
-		return result.toString();
 	}
 	private static boolean includePath(java.lang.String path)
 	{
