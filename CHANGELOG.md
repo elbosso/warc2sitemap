@@ -5,6 +5,11 @@ Changelog of warc2sitemap.
 ## Unreleased
 ### No issue
 
+**Möglichkeit, kompakte Textboxen durch variable Zeielnumbrüche zu erstellen**
+
+
+[e98108bf1243597](https://github.com/elbosso/warc2sitemap/commit/e98108bf1243597) Juergen Key *2021-10-24 06:31:56*
+
 **automatic changelog generation enabled**
 
 

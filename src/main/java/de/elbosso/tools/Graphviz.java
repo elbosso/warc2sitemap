@@ -11,14 +11,12 @@ import org.netpreserve.jwarc.MediaType;
 import org.netpreserve.jwarc.WarcReader;
 import org.netpreserve.jwarc.WarcRecord;
 import org.netpreserve.jwarc.WarcResponse;
-import us.codecraft.xsoup.XElements;
 import us.codecraft.xsoup.Xsoup;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -61,69 +59,33 @@ public class Graphviz extends java.lang.Object
 	private static java.util.List<java.util.regex.Pattern> pathBlacklist;
 	private static java.util.List<java.util.regex.Pattern> pathWhitelist;
 	private static java.util.List<java.util.regex.Pattern> pathEmphasizelist;
-	private static java.lang.String wordBoundaryCharacters=null;
-	private static double ratio=-1;
+	private static de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter wordBoundaryCharacters=new de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter("-c",null,null);
+	private static de.elbosso.util.lang.cmdline.NumberValuedCmdLineParameter ratio=new de.elbosso.util.lang.cmdline.NumberValuedCmdLineParameter("-r",null,null);
 
-	public static void main(java.lang.String [] args) throws IOException
+	public static void main(java.lang.String [] args) throws Exception
 	{
-		java.lang.String pathWhitelistname=null;//"examples/whitelist.txt";
-		java.lang.String pathBlacklistname=null;//"examples/blacklist.txt";
-		java.lang.String pathEmphasizelistname=null;//"examples/blacklist.txt";
-		java.lang.String xpathsToSearchname=null;//"examples/xpathsToSearch.txt";
-		java.lang.String inputFileName=null;
-		java.lang.String outputFileName=null;
-		int i=0;
-		while(i<args.length)
-		{
-			if(args[i].equals("-w"))
-			{
-				pathWhitelistname=args[i+1];
-				++i;
-			}
-			else if(args[i].equals("-b"))
-			{
-				pathBlacklistname=args[i+1];
-				++i;
-			}
-			else if(args[i].equals("-e"))
-			{
-				pathEmphasizelistname=args[i+1];
-				++i;
-			}
-			else if(args[i].equals("-x"))
-			{
-				xpathsToSearchname=args[i+1];
-				++i;
-			}
-			else if(args[i].equals("-c"))
-			{
-				wordBoundaryCharacters=args[i+1];
-				++i;
-			}
-			else if(args[i].equals("-r"))
-			{
-				ratio=java.lang.Double.parseDouble(args[i+1]);
-				++i;
-			}
-			else if(args[i].equals("-i"))
-			{
-				inputFileName=args[i+1];
-				++i;
-			}
-			else if(args[i].equals("-o"))
-			{
-				outputFileName=args[i+1];
-				++i;
-			}
-			else
-				++i;
-		}
-
+		de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter pathWhitelistname=new de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter("-w",null,null);//"examples/whitelist.txt";
+		de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter pathBlacklistname=new de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter("-b",null,null);//"examples/blacklist.txt";
+		de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter pathEmphasizelistname=new de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter("-e",null,null);//"examples/blacklist.txt";
+		de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter xpathsToSearchname=new de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter("-x",null,null);//"examples/xpathsToSearch.txt";
+		de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter inputFileName=new de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter("-i",null,null);
+		de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter outputFileName=new de.elbosso.util.lang.cmdline.StringValuedCmdLineParameter("-o",null,null);
+		de.elbosso.util.lang.cmdline.CmdLineParameter[] cmdLineParameters=new de.elbosso.util.lang.cmdline.CmdLineParameter[]{
+				pathWhitelistname
+				,pathBlacklistname
+				,pathEmphasizelistname
+				,xpathsToSearchname
+				,inputFileName
+				,outputFileName
+				,wordBoundaryCharacters
+				,ratio
+		};
+		de.elbosso.util.lang.cmdline.CmdLineParameter.parse(cmdLineParameters,args);
 
 		pathWhitelist=new java.util.LinkedList();
 		if(pathWhitelistname!=null)
 		{
-			java.io.FileInputStream fis = new java.io.FileInputStream(pathWhitelistname);
+			java.io.FileInputStream fis = new java.io.FileInputStream(pathWhitelistname.getValue());
 			java.lang.String[] pathWhitelistPatterns = de.elbosso.util.Utilities.readIntoStringArray(fis);
 			fis.close();
 			for (java.lang.String p : pathWhitelistPatterns)
@@ -132,7 +94,7 @@ public class Graphviz extends java.lang.Object
 		pathBlacklist=new java.util.LinkedList();
 		if(pathBlacklistname!=null)
 		{
-			java.io.FileInputStream fis = new java.io.FileInputStream(pathBlacklistname);
+			java.io.FileInputStream fis = new java.io.FileInputStream(pathBlacklistname.getValue());
 			java.lang.String[] pathBlacklistPatterns = de.elbosso.util.Utilities.readIntoStringArray(fis);
 			fis.close();
 			for (java.lang.String p : pathBlacklistPatterns)
@@ -141,7 +103,7 @@ public class Graphviz extends java.lang.Object
 		pathEmphasizelist = new java.util.LinkedList();
 		if(pathEmphasizelistname!=null)
 		{
-			java.io.FileInputStream fis = new java.io.FileInputStream(pathEmphasizelistname);
+			java.io.FileInputStream fis = new java.io.FileInputStream(pathEmphasizelistname.getValue());
 			java.lang.String[] pathEmphasizelistPatterns = de.elbosso.util.Utilities.readIntoStringArray(fis);
 			fis.close();
 			for (java.lang.String p : pathEmphasizelistPatterns)
@@ -150,13 +112,13 @@ public class Graphviz extends java.lang.Object
 		java.util.List<java.lang.String> xpathsToSearch= Collections.emptyList();
 		if(xpathsToSearchname!=null)
 		{
-			java.io.FileInputStream fis = new java.io.FileInputStream(xpathsToSearchname);
+			java.io.FileInputStream fis = new java.io.FileInputStream(xpathsToSearchname.getValue());
 			xpathsToSearch = Arrays.asList(de.elbosso.util.Utilities.readIntoStringArray(fis));
 			fis.close();
 		}
 		java.util.Map<String, Vertex<String,Object>> nodes=new java.util.HashMap();
 		java.util.Map<String,java.util.List<Vertex<String,Object>>> connections=new java.util.HashMap();
-		try (WarcReader reader = new WarcReader(FileChannel.open(Paths.get(inputFileName)))) {
+		try (WarcReader reader = new WarcReader(FileChannel.open(Paths.get(inputFileName.getValue())))) {
 			for (WarcRecord record : reader) {
 				if (record instanceof WarcResponse && record.contentType().base().equals(MediaType.HTTP)) {
 					WarcResponse response = (WarcResponse) record;
@@ -275,7 +237,7 @@ public class Graphviz extends java.lang.Object
 				}
 			}
 		}
-		java.io.PrintWriter pw=new java.io.PrintWriter(outputFileName);
+		java.io.PrintWriter pw=new java.io.PrintWriter(outputFileName.getValue());
 		pw.println(graph.toDotString(new Stringifier<Vertex<String, Object>>()
 		{
 			@Override
@@ -283,8 +245,8 @@ public class Graphviz extends java.lang.Object
 			{
 				//java.lang.String l=transform(client.getUserData().replace("&","%26"),0.1,"<br/>");
 				java.lang.String l=client.getUserData();
-				if((ratio>0)&&(wordBoundaryCharacters!=null))
-					l=de.elbosso.util.Utilities.insertLinebreaksForCompactness(l.replace("&","%26"),0.1,wordBoundaryCharacters,"\\n");
+				if((ratio.getValue().doubleValue()>0)&&(wordBoundaryCharacters.getValue()!=null))
+					l=de.elbosso.util.Utilities.insertLinebreaksForCompactness(l.replace("&","%26"),ratio.getValue().doubleValue(),wordBoundaryCharacters.getValue(),"\\n");
 				return l.length()>0?("\""+l+"\""):"\"\"";
 			}
 		}));
