@@ -41,6 +41,13 @@ It is possible to give one more configuration file - a list of patterns to highl
 color assigned - the node itself gets this color as background and every edge terminating at this node is drawn dashed instead of solid using
 this color (and a thicker pen stroke).
 
+Labels can sometimes unseemly long and thus the nodes in the graph become rather wide. To circumvent this,
+two optional parameters are recognized: a string containing characters where it is allowed to 
+insert line breaks into labels given with `-c` and a ratio (given with `-r` and `.` as decimal point): if this ratio is enlarged,
+linebreaks inside label occur more often and as a result, the lines are shorter. A sensible default is 0.1 for this parameter.
+if either one of those two parameters is omitted, line breaking inside labels is not active.
+
+
 ## Build
 ```shell
 mvn -U package assembly:single

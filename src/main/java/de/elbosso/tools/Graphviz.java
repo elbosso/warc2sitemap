@@ -61,6 +61,8 @@ public class Graphviz extends java.lang.Object
 	private static java.util.List<java.util.regex.Pattern> pathBlacklist;
 	private static java.util.List<java.util.regex.Pattern> pathWhitelist;
 	private static java.util.List<java.util.regex.Pattern> pathEmphasizelist;
+	private static java.lang.String wordBoundaryCharacters=null;
+	private static double ratio=-1;
 
 	public static void main(java.lang.String [] args) throws IOException
 	{
@@ -91,6 +93,16 @@ public class Graphviz extends java.lang.Object
 			else if(args[i].equals("-x"))
 			{
 				xpathsToSearchname=args[i+1];
+				++i;
+			}
+			else if(args[i].equals("-c"))
+			{
+				wordBoundaryCharacters=args[i+1];
+				++i;
+			}
+			else if(args[i].equals("-r"))
+			{
+				ratio=java.lang.Double.parseDouble(args[i+1]);
 				++i;
 			}
 			else if(args[i].equals("-i"))
@@ -270,7 +282,9 @@ public class Graphviz extends java.lang.Object
 			public String toString(Vertex<String, Object> client)
 			{
 				//java.lang.String l=transform(client.getUserData().replace("&","%26"),0.1,"<br/>");
-				java.lang.String l=de.elbosso.util.Utilities.insertLinebreaksForCompactness(client.getUserData().replace("&","%26"),0.1,"\\n");
+				java.lang.String l=client.getUserData();
+				if((ratio>0)&&(wordBoundaryCharacters!=null))
+					l=de.elbosso.util.Utilities.insertLinebreaksForCompactness(l.replace("&","%26"),0.1,wordBoundaryCharacters,"\\n");
 				return l.length()>0?("\""+l+"\""):"\"\"";
 			}
 		}));

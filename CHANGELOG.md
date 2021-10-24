@@ -5,6 +5,11 @@ Changelog of warc2sitemap.
 ## Unreleased
 ### No issue
 
+**automatic changelog generation enabled**
+
+
+[672f3e85180f7dd](https://github.com/elbosso/warc2sitemap/commit/672f3e85180f7dd) Juergen Key *2021-10-23 15:45:09*
+
 **dependency management**
 
 

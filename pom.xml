@@ -146,6 +146,10 @@ WENN SIE AUF DIE MOEGLICHKEIT EINES SOLCHEN SCHADENS HINGEWIESEN WORDEN SIND.
                       <argument>examples/hm-ag.de/emphasize.txt</argument>
                       <argument>-x</argument>
                       <argument>examples/hm-ag.de/xpathsToSearch.txt</argument>
+                      <argument>-c</argument>
+                      <argument>_/.% </argument>
+                      <argument>-r</argument>
+                      <argument>0.1</argument>
                       <argument>-i</argument>
                       <argument>hm.warc</argument>
                       <argument>-o</argument>
