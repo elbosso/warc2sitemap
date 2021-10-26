@@ -5,6 +5,11 @@ Changelog of warc2sitemap.
 ## Unreleased
 ### No issue
 
+**cleaned up and streamlined command line parameter handling**
+
+
+[9ddb51af0bd4477](https://github.com/elbosso/warc2sitemap/commit/9ddb51af0bd4477) Juergen Key *2021-10-24 07:06:34*
+
 **Möglichkeit, kompakte Textboxen durch variable Zeielnumbrüche zu erstellen**
 
 

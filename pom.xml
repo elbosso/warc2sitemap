@@ -151,7 +151,7 @@ WENN SIE AUF DIE MOEGLICHKEIT EINES SOLCHEN SCHADENS HINGEWIESEN WORDEN SIND.
                       <argument>-r</argument>
                       <argument>0.1</argument>
                       <argument>-i</argument>
-                      <argument>hm.warc</argument>
+                      <argument>hm.warc.gz</argument>
                       <argument>-o</argument>
                       <argument>/tmp/sitemap.gv</argument>
                   </arguments>

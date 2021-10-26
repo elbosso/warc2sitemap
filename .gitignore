@@ -10,3 +10,5 @@
 DEADJOE
 /examples/hm-ag.de/
 *.warc
+/www.hm-ag.de/
+/hm.warc.gz

@@ -22,7 +22,7 @@ then be rendered - for example into [SVG](https://en.wikipedia.org/wiki/Scalable
 ## Inner workings
 
 WARC files can be created for example by using [wget](https://wiki.archiveteam.org/index.php/Wget_with_WARC_output). The application 
-currently only supports uncompressed WARC files.
+currently supports uncompressed as well as compressed WARC files.
 
 * The WARC file is scanned for *response* objects
 * Of those found, only the ones having media type *text/html* are considered
