@@ -276,11 +276,11 @@ WENN SIE AUF DIE MOEGLICHKEIT EINES SOLCHEN SCHADENS HINGEWIESEN WORDEN SIND.
         </dependency>
 
     </dependencies>
-    <!--distributionManagement>
+    <distributionManagement>
         <repository>
             <id>internal.repo</id>
             <name>Internal repo</name>
             <url>file:///tmp/</url>
         </repository>
-    </distributionManagement-->
+    </distributionManagement>
 </project>

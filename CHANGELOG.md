@@ -16,6 +16,11 @@ Changelog of warc2sitemap.
 **housekeeping**
 
 
+[75fe485f49045e0](https://github.com/elbosso/warc2sitemap/commit/75fe485f49045e0) Juergen Key *2022-04-26 15:56:58*
+
+**housekeeping**
+
+
 [b8d5658b9e3bf63](https://github.com/elbosso/warc2sitemap/commit/b8d5658b9e3bf63) Juergen Key *2022-04-26 15:55:01*
 
 **tests with compressed warc files successful**
