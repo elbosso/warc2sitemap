@@ -5,6 +5,11 @@ Changelog of warc2sitemap.
 ## Unreleased
 ### No issue
 
+**tests with compressed warc files successful**
+
+
+[b9f1139c165958e](https://github.com/elbosso/warc2sitemap/commit/b9f1139c165958e) Juergen Key *2021-10-26 04:12:22*
+
 **cleaned up and streamlined command line parameter handling**
 
 
