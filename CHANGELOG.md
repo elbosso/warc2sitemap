@@ -3,7 +3,20 @@
 Changelog of warc2sitemap.
 
 ## Unreleased
+### GitHub [#1](https://github.com/elbosso/warc2sitemap/issues/1) get rid of log4j and use the new bom dependency
+
+**re #1**
+
+
+[41eee13bcb39a11](https://github.com/elbosso/warc2sitemap/commit/41eee13bcb39a11) Juergen Key *2022-04-26 15:54:01*
+
+
 ### No issue
+
+**housekeeping**
+
+
+[b8d5658b9e3bf63](https://github.com/elbosso/warc2sitemap/commit/b8d5658b9e3bf63) Juergen Key *2022-04-26 15:55:01*
 
 **tests with compressed warc files successful**
 
